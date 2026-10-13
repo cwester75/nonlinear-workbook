@@ -1,5 +1,24 @@
 # Book review and corrections
 
+## Chapter 3 corrections and departures
+
+All printed pp.135-152 / PDF pp.147-164 were visually reviewed before implementation.
+
+| Printed page | Type | Finding | Implementation / evidence |
+|---|---|---|---|
+| 137 | Linearization boundary | Imaginary/zero eigenvalues need not determine nonlinear phase portraits. | Report nonhyperbolic linearization separately; test linear centers and degenerate matrices. |
+| 138-140 | Reference departure | Printed orbit and finite Lie listing use their own parameterization/initialization. | Independently derive the time-centered positive separatrix q=3/(2+sqrt(13)*cosh(t/sqrt(2))); verify differential equation and zero energy. Do not claim the listing's initial state lies exactly on it. |
+| 141 | Classification error | Eigenvalues +1,-1 are called an unstable node. | Classify odd-pi pendulum equilibria as saddles; even-pi equilibria are nonhyperbolic linear centers. |
+| 142 | Integration convention | Pendulum listing drifts then kicks; Chapter10 symplectic Euler kicks then drifts. | Compare explicit kick-drift Euler and kick-drift-kick Verlet; document ordering, not bitwise legacy reproduction. |
+| 147 | Equation/claim mismatch | Printed v'=-x-mu*sin(v) has Jacobian [[0,1],[-1,-mu]] at the origin, stable for mu>0, contrary to the unstable-origin claim. | Implement printed sign unchanged and document stable origin. No numerical proof of infinitely many cycles is asserted. |
+| 148 | Equation/listing mismatch | Listing updates velocity with exp(-h*mu*(x_new^2-1)) then -h*x_new; this is a Van der Pol split update, not sine damping. It is called symplectic despite dissipation. | Separate van_der_pol_listing_step from sine_damping; retain exact update convention and label it dissipative. |
+| 150 | Domain boundary | The positive-population discussion omits the boundary equilibrium(0,0). | Return both equilibria; logarithmic invariant explicitly requires positive populations. |
+
+All planar classifications use continuous-time eigenvalue real parts, not map
+multiplier magnitudes. Section crossings use explicitly documented sample-linear
+interpolation, not solver event roots. The shared sampling harness retains periodic
+controls to expose finite-window diagnostic sensitivity rather than certify chaos.
+
 ## Chapter 10 corrections and interpretation choices
 
 All printed pp.313-336 visually reviewed 2026-10-13.

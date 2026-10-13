@@ -1,5 +1,13 @@
 # Nonlinear Workbook
 
+## Chapter 3
+
+Implemented planar continuous-time classification, homoclinic oscillator, pendulum,
+Van der Pol, printed sine damping, radial equilibria and Lotka-Volterra. See
+[guide](docs/chapter03.md) and [validation](docs/chapter03-validation.md).
+Run `python examples/chapter03/validation.py` for phase portraits, invariant checks
+and shared solver-to-Chapter2 sampling/noise sweeps.
+
 ## Chapter 10 and shared validation
 
 Euler, fixed/adaptive Fehlberg4(5), supplied-derivative Taylor expansion, ghost
