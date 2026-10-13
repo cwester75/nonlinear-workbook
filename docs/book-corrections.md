@@ -1,5 +1,23 @@
 # Book review and corrections
 
+## Chapter 5 corrections and departures
+
+Printed pp.177-204 / PDF pp.189-216 were visually reviewed in full before implementation.
+
+| Printed page | Type | Finding | Decision / evidence |
+|---|---|---|---|
+| 179 | Linear-stability boundary | Purely imaginary eigenvalues alone do not imply all linear trajectories are ellipses if nontrivial Jordan blocks occur. | Classify zero-real-part directions as center/nonhyperbolic; do not infer nonlinear stability. |
+| 183,185,188 | Verified convention, not an error | Full-resolution reinspection confirms the prose and listings agree: sigma16,r40,b4. The planning review incorrectly suspected a parameter-order inconsistency. | Use named parameters; no source correction is warranted here. |
+| 191-193 | Numerical departure | Unnormalized variational evolution grows or contracts exponentially; finite initial tangent norm also enters finite-time rates. | QR normalization with identity basis and explicit burn-in; return full spectrum and running rates. |
+| 197-200 | Interpretation/numerical departure | Exterior-area growth is a two-dimensional exponent, asymptotically a pair sum for a generic initial plane, not the second individual exponent. | Independently construct additive second compound; periodic Euclidean normalization; compare with the largest pair of QR estimates. |
+| 201-202 | Theorem versus diagnostic | Complex eigenvalue crossing does not verify all nonlinear Hopf hypotheses. | Label bracketed results candidates only; reject ambiguous pairs and additional center eigenvalues. |
+| 203 | Parameter inconsistency | Earlier line states r0,b2, but derivative conditions -2b+2=0 and final conclusion require b1. | Require r0,b1; verify derivative cancellation and numerical invariant drift. |
+
+Symbolic REDUCE/SymbolicC++ machinery is replaced by explicit equations, analytic
+Jacobians and algebraic equilibrium roots, with NumPy eigenvalues. Theorems are
+documented, not represented as numerical proofs. Solver and observation parameters,
+noise, horizons and fitting slices remain explicit. No automatic chaos classification.
+
 ## Chapter 3 corrections and departures
 
 All printed pp.135-152 / PDF pp.147-164 were visually reviewed before implementation.

@@ -1,5 +1,14 @@
 # Nonlinear Workbook
 
+## Chapter 5
+
+Implemented Lorenz, generalized Lotka-Volterra, the four-dimensional hyperchaotic
+example, and the chemical Hopf model, with analytic Jacobians and stability tools.
+Shared validation now includes continuous-flow QR spectra and independent exterior
+area growth. See [guide](docs/chapter05.md) and [validation](docs/chapter05-validation.md).
+Run `python examples/chapter05/validation.py` for trajectories, spectra and observation
+sweeps. Eigenvalue crossings are reported as Hopf candidates, not bifurcation proofs.
+
 ## Chapter 3
 
 Implemented planar continuous-time classification, homoclinic oscillator, pendulum,

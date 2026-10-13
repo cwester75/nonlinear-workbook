@@ -1,6 +1,8 @@
 """Shared equations -> uniformly sampled observations -> diagnostic harness."""
 import numpy as np
 from .chapter10 import integrate
+from .flow_validation import (flow_lyapunov_spectrum, exterior_area_growth,
+                              second_compound, wedge, FlowSpectrumResult, AreaGrowthResult)
 
 
 def sampled_observations(rhs,y0,*,samples,sample_interval,burn_in,noise_std,seed,
@@ -51,9 +53,11 @@ def kantz_sampling_sweep(rhs,y0,*,sample_counts,sample_intervals,noise_levels,
             for noise in noise_levels:
                 data=sampled_observations(rhs,y0,samples=samples,sample_interval=interval,
                     burn_in=burn_in,noise_std=noise,seed=seed,observation=observation,solver_parameters=solver_parameters)
+                radius=float(epsilon(data['clean'].copy())) if callable(epsilon) else epsilon
+                if not np.isfinite(radius) or radius<=0: raise ValueError('positive finite neighborhood radius required')
                 for dimension in dimensions:
-                    record=dict(data,samples=samples,burn_in=burn_in,dimension=dimension,delay=delay,theiler=theiler,epsilon=epsilon,horizon=horizon)
-                    try: lags,curve,count=kantz_curve(data['observed'],dimension=dimension,delay=delay,theiler=theiler,epsilon=epsilon,horizon=horizon)
+                    record=dict(data,samples=samples,burn_in=burn_in,dimension=dimension,delay=delay,theiler=theiler,epsilon=radius,horizon=horizon)
+                    try: lags,curve,count=kantz_curve(data['observed'],dimension=dimension,delay=delay,theiler=theiler,epsilon=radius,horizon=horizon)
                     except ValueError as error:
                         if str(error)!='No valid neighbors; adjust epsilon or sample size': raise
                         record.update(status='no_valid_neighbors',lags=np.arange(horizon),curve=None,reference_count=0,fits=[])
