@@ -1,0 +1,155 @@
+# Book review and corrections
+
+## Chapter 12 corrections and implementation departures
+
+Source: printed pp.419-494 / PDF pp.431-506, visually reviewed 2026-10-13.
+
+| Printed page | Type | Finding | Decision / evidence |
+|---|---|---|---|
+| 435 | Listing error | SetBit's clearing branch ANDs with the bit mask instead of its complement. | Independently implemented binary vectors avoid packed storage; bit clearing requires AND with complement. |
+| 438 | Numerical error | Prints scalar maximum at5.64891 for cos(x)-sin(2x). | Derivative equation gives sin(x)=(1-sqrt(33))/8; maximizing x=5.648318436046016. |
+| 438, 442, 445 | Listing/domain mismatch | Discussion uses [0,2*pi]; first listing uses [-1,1]; packed listing restores [0,6.28318]. | Examples use explicit [0,2*pi], inclusive chromosome endpoints. |
+| 447-448 | Interpretation boundary | Fitness-proportional probabilities assume suitable objective values; expected improvement is not monotonic improvement of each realization. | Reject signed/all-zero roulette weights; tournament selection supports signed scores. Record population means and best-ever values separately. |
+| 449 | Listing error | Objective contains an unreachable second return statement. | Use Gaussian expression exp(-(x-1)^2-y^2/2). |
+| 451-454 | Randomness departure | Repeated wall-clock reseeding inside operators can repeat random streams. | One seeded generator per run; independently spawned island streams. |
+| 460-465 | Exact benchmark | Book solution has value149, weight19, below capacity20. | Exhaustive enumeration confirms optimal value; feasibility does not require filling capacity. |
+| 476-477 | Precision convention | TSP input is a rounded distance table. | Reuse Chapter11 full-precision coordinates and exact benchmark; do not assert equality with rounded legacy output. |
+| 479-480 | Algorithm/listing difference | Pseudocode proposes neighbors; code proposes uniform global candidates and prints final state. | Caller controls proposal and cooling; retain both best and final states. |
+| 481-494 | Runtime departure | PVM distributed infrastructure is tied to the historical implementation. | Persistent serial ring-island model replaces messaging; no parallel speedup claim. |
+
+Other explicit choices: binary_ga uses generational roulette or tournament selection
+with optional one-elite retention, rather than pretending to reproduce every
+different greedy listing. TSP retains greedy parent replacement. Crossover segments
+are half-open; binary decoding is MSB first. Schema matching is executable, while
+the conditional schema-growth argument is explanatory and does not guarantee
+global optimality. See chapter12.md for coverage and chapter12-validation.md for
+reference results and limitations.
+
+## Chapter 2
+
+Source: The Nonlinear Workbook, printed pp. 107â€“134 (PDF pp. 119â€“146).
+Local reference: C:/Users/cw_se/NonSensitive/PDFs/the-nonlinear-workbook.pdf.
+The source PDF is not distributed in this repository. These findings come from
+visual inspection; implementations are independently written.
+
+| Printed page | Finding | Implementation decision |
+|---|---|---|
+| 112 | Derives AV=C, then later writes AC=V. | Preserve AV=C when implementing local Jacobian fitting. Implemented with least squares and QR. |
+| 113 | Successor distance is labeled d[0] instead of d1[0]. | Distinguish initial and evolved distances. |
+| 117 | Neighborhood includes the last sample, but later reads its successor; empty neighborhoods divide by zero. | Restrict neighbors to valid future horizons; reject empty neighborhoods. |
+| 120â€“121 | Kantz listing generates x but references u; embedding construction is unsafe for dimensions above one. | Consistent array name and backward delay vectors with valid bounds. |
+| 119â€“121 | Listing logs a sum of neighbor distances rather than their mean, and divides by full T despite missing references. | Average within each neighborhood; average logs only over eligible references. |
+| 125, 128 | Standard deviation formula and code differ: code subtracts mean squared from unsquared observations. | Compute sqrt(mean((x-mean)**2)). |
+| 125 | Scale divisibility uses T-1 while partition definition uses T. | Explicitly drop incomplete trailing blocks for each scale. |
+| 132 | Normalized complexity is described as bounded by one. | Treat normalization as asymptotic; do not clip finite samples. |
+
+Interpretation boundaries: Pearson zero correlation does not imply independence.
+H=0.5 does not establish independence. A Hurst scaling estimate does not by itself
+establish fractional Brownian motion or a stable distribution. The chapter's
+noise-color labels are not adopted as general classifications. Positive estimated
+divergence in noisy observations is not by itself proof of deterministic chaos.
+
+The Kantz implementation adds temporal neighbor exclusion and explicit delay;
+these are implementation safeguards beyond the chapter's simple demonstration.
+The known-map derivative estimate is a reference benchmark, not a substitute for
+data-only estimation. Wolf replacement and local-Jacobian spectra are now implemented; see the
+completion review below for conventions and coverage.
+
+## Completion review (2026-10-10)
+
+All printed pp.107-134 were visually re-inspected. The previous deferred-method
+statement describes the initial implementation; Wolf and local-Jacobian methods
+are now implemented. The coverage table is in chapter02.md.
+
+Confirmed printed inconsistencies remain those listed above. Additional explicit
+implementation departures and interpretation choices:
+
+- pp.111-112: backward rather than forward delay vectors; equivalent index
+  convention. Solve row-displacement least squares Y B=Z and use A=B.T, avoiding
+  inversion of covariance matrices. QR replaces explicit Gram-Schmidt.
+- p.118: the displayed replacement-count average assumes unit evolution intervals.
+  For variable segment lengths, divide total log growth by total elapsed time.
+  Evolution thresholds, maximum per-segment steps, directed angular limits, and
+  temporal exclusion are explicit. If replacement fails, retain the pair as the
+  text prescribes. Record boundary and zero-separation termination.
+- pp.113-117: direct estimators exclude zero distances and neighbors without
+  successors. Neighborhood mode averages logs per eligible reference. These
+  safeguards are not claims that finite neighborhoods are unbiased.
+- pp.130-134: LZ normalization uses the observed alphabet. A constant sequence's
+  one-symbol alphabet has no logarithmic normalization; return zero by convention.
+  The chapter assumes a fixed binary alphabet, which yields a small nonzero
+  normalized constant-sequence value. Phrase counts remain compatible.
+- Numerically full-rank local fits on curved, low-dimensional reconstructions can
+  be poorly conditioned and generate spurious transverse exponents. No automatic
+  conditioning cutoff or optimal embedding dimension is claimed.
+
+Tests distinguish algebraic errors from finite-sample estimator behavior; parameter
+sweeps are diagnostics, not proofs of chaotic dynamics.
+
+## Chapter 1 corrections and interpretation choices
+
+Visually reviewed all printed pp.1-106 / PDF pp.13-118 on 2026-10-11.
+Findings below distinguish algebra/listing errors from deliberate numerical choices.
+
+| Printed page | Type | Finding | Implementation / evidence |
+|---|---|---|---|
+| 14 | Listing error | Independent bungalow if statements end with an else attached only to the final if; earlier branch results can be overwritten with zero. Boundary .5 is also omitted. | Use one exclusive if/elif chain with explicit boundary ownership; a=1/3 reproduces tent map exactly. |
+| 25 | Equation normalization error | Logistic invariant density is printed as 1/(2*pi*sqrt(x*(1-x))), although its integral is asserted to be one. | Use 1/(pi*sqrt(x*(1-x))); its CDF is 2/pi*arcsin(sqrt(x)). Tests verify bin masses and normalization. |
+| 26 | Listing bounds error | Histogram index can equal n_bins at x=1. | Include final right endpoint in last bin; retain explicit counts. |
+| 29 | Interpretation inconsistency | Calls bungalow Lyapunov function convex while also giving an interior maximum. | Do not adopt the convexity claim; retain parameter-specific numerical diagnostics. |
+| 36 | Finite-sample convention | Autocorrelation listing uses a common truncated range and divides by diff+1 despite summing diff terms. | Use N-lag valid pairs and return pair counts; exact small-series fixture verifies sums. |
+| 61 | Listing return error | Newton returns x0, the previous iterate, after computing x1. | Return the current iterate, stop on residual, bound iterations, and report singular derivatives. |
+| 87-88 | Finite-sample convention | Counts ordered nonself pairs but divides by T^2. The limiting convention does not yield an exact finite-sample probability. | Count eligible unordered pairs and divide by their exact number, with temporal exclusion. Exact pair fixtures support the choice. |
+| 90 | Grid convention | Capacity listing rescales axes separately to bounding-box grid dimensions and uses rounded indices. | Use supplied physical scales and fixed origin with floor cells; record this departure and origin sensitivity. |
+| 98 | Listing error | Both escape conditions examine x11; x22 is never checked. It continues after escape. | Check both coordinates and stop at first escape/nonfinite state; retain update count and finite horizon. |
+| 103 | Listing stopping error | Vector Newton stops when either coordinate difference is small because the continuation condition uses AND. | Stop only on the vector residual norm; return bounded iteration status. |
+| 104-106 | Equation/listing inconsistency | y update uses newly computed x, while the printed variational equations differentiate a simultaneous update using old x. | Implement the sequential map and differentiate its composition, including chain-rule terms. Analytic Jacobian is checked against finite differences. |
+
+Other departures: QR replaces long unnormalized tangent-vector multiplication,
+avoiding exponential overflow. Scalar derivatives are provided directly rather
+than requiring the book's symbolic C++ libraries. Fraction/int replace legacy
+Verylong/Rational. NumPy's IID RNG supplies Monte Carlo uncertainty; the book's
+polynomial map is retained as a separate demonstration. Forward Fourier
+normalization is made consistent across the direct DFT and custom FFT.
+
+Tent/Bernoulli float64 trajectories can collapse to zero despite chaotic real-number
+maps. Exact rational orbits can be periodic; neither fact contradicts statements
+about almost all initial conditions. The demonstrations do not prove Collatz,
+universality, chaos, hyperchaos, or an asymptotic dimension.
+
+The Feigenbaum demonstration uses multiplier crossings of the logistic family;
+the book listing on pp.62-63 instead locates superstable critical-point cycles of
+x^2+mu. Both illustrate the same limiting ratio, but finite parameter sequences
+are distinct and are not compared as identical values.
+
+## Chapter 11 corrections and implementation departures
+
+Source: printed pp.337-418 / PDF pp.349-430, visually reviewed 2026-10-12.
+The approved implementation follows corrected mathematics rather than adding
+legacy execution modes. Relevant fixtures were rechecked at full page resolution.
+
+| Printed page | Type | Finding | Decision / evidence |
+|---|---|---|---|
+| 338, 340 | Activation convention / listing inconsistency | The sign listing returns 0 for negative inputs, unlike the mathematical bipolar sign; zero conventions also differ between activations and Hopfield. | Explicit 0/1 threshold and -1/+1 bipolar functions; zero maps to positive for these functions. Hopfield separately holds its old state at zero field. |
+| 348-349 | Convergence scope error | The single-cell energy proof is presented after synchronous updates; unconditional convergence to a fixed point does not follow for simultaneous updates. | Symmetric zero-diagonal asynchronous updates have nonincreasing energy. Synchronous recurrence is monitored for cycles; an exact two-neuron counterexample is tested. |
+| 360 | Energy normalization difference | The program returns -sum(W_ij*s_i*s_j), twice the -1/2 quadratic form printed on p.348. | Use the mathematical normalization, yielding -8 for each five-neuron stored pattern. Dynamics are unchanged by this positive rescaling at zero thresholds. |
+| 361 | Listing identifier error | The field-initialization loop declares po but tests/increments p. | NumPy allocation and explicit array validation replace unsafe allocation/initialization scaffolding. |
+| 364-365 | Fourier convention | The printed square-image transform has a 1/N factor, whereas two forward-normalized 1D transforms yield 1/N^2. | Use forward FFT2 normalization 1/(rows*columns), consistent with Chapter 1. Translation invariance is unaffected by constant normalization. |
+| 364-365 | Representation boundary | Fourier magnitudes discard phases; invariance does not make the descriptor unique. | Test circular shifts and distinct reflected images with matching magnitudes. Do not force continuous features into bipolar states. |
+| 366 | Similarity interpretation | The normalized dot-product score divides by the number of ones in the first vector; it is asymmetric and undefined when that count is zero. | Label it as a book score, retain its definition, and reject the zero denominator. It is not presented as a metric. |
+| 374, 378, 380 | Schedule inconsistency / explicit departure | Learning-rate factors differ between the worked exposition and listing (1.05 versus 1.1 appears in the text). | Reproduce the first epoch with eta=.6. Subsequent examples use fully recorded geometric per-update endpoint schedules. |
+| 383-386 | Heuristic boundary | Reported city tour is feasible but not Euclidean-optimal for the printed coordinates. | Enumerate all 5040 city-0-fixed tours: optimum 64.8559644, book tour 68.0193643. Report the heuristic gap without substituting the optimum. |
+| 384-386 | Neighborhood departure | Printed TSP kernel uses observation-coordinate separation rather than cyclic neuron-index distance. | Implement the approved ring-index Gaussian neighborhood with explicit width and learning schedules; this is a corrected SOM demonstration, not legacy code reproduction. |
+| 398 | Update scheduling difference | Listing computes a set of responses before applying its weight corrections, unlike the online presentation rule. | Perceptron updates are online, train the bias, and verify the full dataset after each epoch. |
+| 411-416 | Gradient/loss convention | The text discusses alternative layer-update scheduling; the listing's epoch error accumulates per-pattern errors obtained at changing weights. | Compute all gradients from the same current parameters and monitor a fresh full-dataset mean half-squared loss after each epoch. |
+
+The MLP loss averages over samples, so the worked sum-loss tolerance .001 for four
+XOR inputs corresponds to mean tolerance .00025. Online updates use one-sample
+loss; batch updates use the mean gradient. Reported epoch counts therefore describe
+these explicit conventions and are not asserted to match the legacy listing.
+
+Spurious Hopfield states, inverted memories, synchronous cycles, unused Kohonen
+prototypes, and training exhaustion are distinct outcomes. None is silently
+converted into a successful recall or an optimal solution. The chapter's
+universal-approximation theorem is explanatory capacity theory, not an implemented
+proof, a guarantee of convergence, or a guarantee of generalization.
