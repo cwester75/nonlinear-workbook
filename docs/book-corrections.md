@@ -1,5 +1,31 @@
 # Book review and corrections
 
+## Chapter 10 corrections and interpretation choices
+
+All printed pp.313-336 visually reviewed 2026-10-13.
+
+- p.320: the simple product splitting has local remainder O(h^2), and symmetric
+  splitting O(h^3): global orders one and two. The phrase "up to third order"
+  should not be read as global third-order accuracy.
+- p.333: first-order product splitting is printed with O(t^3), inconsistent with
+  p.320 and noncommuting flows. Use O(t^2) local error.
+- pp.322-323: supplied coefficients are the fifth-order Fehlberg update. The
+  embedded fourth-order weights and adaptive error controller are added explicitly;
+  stage times are included for nonautonomous equations.
+- p.327: the displayed Lie listing retains only two Taylor terms. It is a finite
+  second-order approximation, not an exact solution as the surrounding prose says.
+  taylor_step requires supplied derivatives; no symbolic REDUCE dependency.
+- pp.324-328: ghost onset depends on initialization, mesh and arithmetic. Tests
+  verify recurrence and eventual divergence, not the reported precise onset time.
+  The parasitic mode is a property of the scheme, not proof of continuous chaos.
+- pp.329-334: separable kick-drift and Verlet are implemented; general implicit
+  Hamiltonians and higher-order BCH compositions remain explanatory material.
+- pp.335-336: the scaled recurrence is an area-preserving discrete map. Its
+  irregular motion does not establish chaos of the continuous quartic oscillator.
+
+Shared harness samples at explicitly reached solver endpoints, adds seeded
+observation noise afterward, and reports diagnostics in observation-time units.
+
 ## Chapter 12 corrections and implementation departures
 
 Source: printed pp.419-494 / PDF pp.431-506, visually reviewed 2026-10-13.

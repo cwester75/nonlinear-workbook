@@ -1,5 +1,13 @@
 # Nonlinear Workbook
 
+## Chapter 10 and shared validation
+
+Euler, fixed/adaptive Fehlberg4(5), supplied-derivative Taylor expansion, ghost
+recurrences and separable symplectic Euler/Verlet are implemented. See
+[Chapter10 guide and validation](docs/chapter10.md). The shared observation harness
+connects known equations to Chapter2 diagnostic sweeps with controlled sampling
+and seeded noise. Run `python examples/chapter10/validation.py`.
+
 ## Chapter 12
 
 Implemented binary genetic search, schema/encoding utilities, exact-reference
