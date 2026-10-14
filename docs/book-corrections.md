@@ -1,5 +1,25 @@
 # Book review and corrections
 
+## Chapter 8 corrections and departures
+
+All printed pp.275-298 / PDF pp.287-310 were visually reviewed before implementation.
+Pages284,294,297 were rechecked at full resolution.
+
+| Printed page | Type | Finding | Decision / evidence |
+|---|---|---|---|
+| 275-277 | Interpretation boundary | Hausdorff, box capacity and finite numerical scaling curves are different constructions. | Keep existence/definition theory explanatory and reuse explicitly sampled box/pair diagnostics; do not equate fitted slopes with Hausdorff dimension. |
+| 281-283 | Construction convention | Printed recursion terminates by drawing two segments and uses integer screen coordinates. | Depth0 is one unit segment; complex similarities eliminate screen rounding and provide exactly2^depth segments. |
+| 284 | Verified coordinate fixture | Three .5I maps use translations(1,1),(1,50),(50,50), defining a right-triangle version. | Preserve as printed=True; normalized equilateral fixture is an explicit coordinate choice, not a correction. |
+| 287-289 | Geometry distinction | Text describes a closed snowflake while the Java example starts with a segment. | Provide separate open curve and closed outward snowflake; test the area formula only on the standard equilateral snowflake. |
+| 290-295 | Finite-budget convention | Legacy images color nonescaping pixels after a fixed iteration count; the Julia listing plots a filled-set approximation. | Separate escaped/count/nonfinite arrays; label finite nonescape and filled Julia explicitly. |
+| 296,298 | Truncation/sampling | Infinite regularity discussion accompanies a three-term sampled applet. | Return explicit finite frequencies, geometric tail bound and aliasing examples; no current theorem-status claim. |
+| 297 | Characteristic normalization error | Cosine transform retains coefficient(lambda-1)/(2lambda) after combining both symmetric jump signs, giving value1/2 at k0, inconsistent with the normalized jump distribution and following functional equation. | Use normalized sum_j p_j*cos(k*b^j); test characteristic(0)=1. |
+| 297 | Explicit finite-law departure | Book assumes b>lambda>1 for its asymptotic discussion. Selected bounded fixture uses b=lambda=2. | Permit both>1 for the finite law, cap levels, renormalize retained probabilities and report omitted mass. No stable-process limit is inferred. |
+
+All exponential constructions enforce allocation bounds before generation. Floating
+frequency/jump powers avoid integer overflow. Escape images and finite point clouds
+remain numerical approximations; grid resolution and iteration budgets are recorded.
+
 ## Chapter 6 corrections and departures
 
 All printed pp.205-242 / PDF pp.217-254 were visually reviewed before implementation.

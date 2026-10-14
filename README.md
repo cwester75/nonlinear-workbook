@@ -1,5 +1,14 @@
 # Nonlinear Workbook
 
+## Chapter 8
+
+Implemented exact Cantor intervals, affine IFS, dragon/gasket/Koch constructions,
+Mandelbrot/filled-Julia escape arrays, finite Weierstrass sums and bounded seeded
+Lévy flights. Reuses Chapter1 dimension curves with explicit fit slices. See
+[guide](docs/chapter08.md) and [validation](docs/chapter08-validation.md).
+Run `python examples/chapter08/validation.py` for geometric references, escape
+budgets, aliasing and dimension sensitivity demonstrations.
+
 ## Chapter 6
 
 Implemented five driven models with phase lifts, exact-time stroboscopic sampling,
