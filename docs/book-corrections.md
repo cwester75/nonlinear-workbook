@@ -1,5 +1,25 @@
 # Book review and corrections
 
+## Chapter 6 corrections and departures
+
+All printed pp.205-242 / PDF pp.217-254 were visually reviewed before implementation.
+Suspected derivative errors on pp.213 and230 were rechecked at full resolution.
+
+| Printed page | Type | Finding | Decision / evidence |
+|---|---|---|---|
+| 211-212,228,232 | Sampling convention | Listings select points within finite timing windows, potentially recording multiple points around a drive period. | Integrate to exact endpoint times, one sample per requested period; retain absolute phases. |
+| 213 | Verified equation, not an error | Lift uses u3=Omega*t; derivative of k*cos(u3) with respect to u3 is -k*sin(u3). Planning incorrectly suspected a missing Omega factor. | No frequency correction; analytic phase Jacobians are checked against finite differences. |
+| 218,224,235 | Forcing-phase departure | Some listings reset time to zero after burn-in, changing forcing phase unless the burn is a whole number of periods. | Preserve absolute time; all observation metadata include forcing phase. |
+| 219 | Listing/definition mismatch | Code truncates every lag to T-length, divides by diff+1 after diff terms, and omits lag-zero normalization. | Reuse available-pair demeaned autocovariance, return counts, normalize by variance. |
+| 221 | Spectral convention | Continuous/infinite-time definitions do not prescribe a finite-sample window/FFT convention. | Explicit one-sided density, dt/window-energy normalization, DC/Nyquist handling and Parseval checks. |
+| 230,232 | Taylor coefficient error | Listing uses -v*(1-k*cos(phase))*cos(q); differentiating -(1+k*cos(phase))*sin(q) requires -(1+k*cos(phase))*v*cos(q). The +Omega*k*sin(phase)*sin(q) term is correct. | Correct RHS/Jacobian and adaptive Fehlberg replace the legacy Taylor step. The planning suspicion about forcing-derivative sign was incorrect. |
+| 239-242 | Multi-drive interpretation | Two supplied decimal frequencies do not justify assuming one drive period closes the two-state map. | Retain both phases; report sampling at drive1 period as phase-aware observations, not a closed projected return map. |
+
+Conditional spectra keep phases fixed under perturbation; lifted spectra include
+phase coordinates and neutral directions. Periodic shooting uses unwrapped state
+equality, not an implicit angular quotient. Positive finite-time divergence,
+autocorrelation decay and broadband spectra do not independently prove chaos.
+
 ## Chapter 5 corrections and departures
 
 Printed pp.177-204 / PDF pp.189-216 were visually reviewed in full before implementation.

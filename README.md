@@ -1,5 +1,14 @@
 # Nonlinear Workbook
 
+## Chapter 6
+
+Implemented five driven models with phase lifts, exact-time stroboscopic sampling,
+variational return maps, periodic shooting, Floquet classification, normalized
+autocorrelation and one-sided periodograms. See [guide](docs/chapter06.md) and
+[validation](docs/chapter06-validation.md). Run
+`python examples/chapter06/validation.py` for sections, spectra, signal diagnostics
+and observation sweeps; two-drive samples retain the second forcing phase.
+
 ## Chapter 5
 
 Implemented Lorenz, generalized Lotka-Volterra, the four-dimensional hyperchaotic
