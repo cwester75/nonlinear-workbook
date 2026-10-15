@@ -1,6 +1,7 @@
 """Shared equations -> uniformly sampled observations -> diagnostic harness."""
 import numpy as np
 from .chapter10 import integrate
+from .chapter04 import integrate_separable, refined_sections, SectionResult
 from .flow_validation import (flow_lyapunov_spectrum, exterior_area_growth,
                               second_compound, wedge, FlowSpectrumResult, AreaGrowthResult)
 

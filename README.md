@@ -1,5 +1,14 @@
 # Nonlinear Workbook
 
+## Chapter 4
+
+Implemented Hénon–Heiles and quartic Hamiltonians, periodic/open three-body Toda,
+open-chain Lax diagnostics, Mathieu Floquet analysis, and shared separable
+integration/refined sections. See [guide](docs/chapter04.md) and
+[validation](docs/chapter04-validation.md). Run
+`python examples/chapter04/validation.py` for trajectories, sections, conserved
+quantities and the Mathieu stability scan. Chapters 7, 9 and 13 remain future work.
+
 ## Chapter 8
 
 Implemented exact Cantor intervals, affine IFS, dragon/gasket/Koch constructions,

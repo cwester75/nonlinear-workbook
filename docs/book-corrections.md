@@ -256,3 +256,23 @@ prototypes, and training exhaustion are distinct outcomes. None is silently
 converted into a successful recall or an optimal solution. The chapter's
 universal-approximation theorem is explanatory capacity theory, not an implemented
 proof, a guarantee of convergence, or a guarantee of generalization.
+
+## Chapter 4 corrections and implementation departures
+
+Source: printed pp.153–176 / PDF pp.165–188, visually reviewed; suspected issues
+were rechecked at full resolution before recording corrections.
+
+| Printed page | Type | Finding | Decision / evidence |
+|---|---|---|---|
+| 159–163 | Model distinction | The Hamiltonian on p.159 is periodic with three exponential bonds, but the tridiagonal Lax matrix and a3=0 on p.161 describe an open chain. | Implement both, separately named by the required periodic boolean; the displayed Lax pair applies only to the open chain. Canonical/Lax derivative and trace(L²)=H_open/2 tests confirm the scaling. The output on p.163 is internally consistent; no sign correction is needed. |
+| 165–166 | Floquet qualification | Statements about multipliers ±1 require distinguishing eigenvector solutions from arbitrary initial states when a Jordan block is present. | Report unit-modulus boundaries as unresolved; the δ=ε=0 fixture has M=[[1,π],[0,1]] and secular growth despite multipliers 1. |
+| 171–172 | Numerical convention | The section listing uses endpoint sign changes and drift-then-kick stepping. | Use directional crossings with adaptive bracket refinement, and reuse Chapter10 kick-drift Euler/Verlet. These are explicit implementation choices, not claims of transcription errors. |
+| 173 | Confirmed equation error | The displayed extra integral is 3p1p2+q1q2(q1+q2). Its derivative is not identically zero for the printed r=0 equations. | Correct to 3p1p2+q1q2(q1²+q2²). An independent canonical rotation gives I=3(H+−H−); analytic gradient cancellation and a counterexample for the printed expression are tested. |
+| 153–176 | State-order convention | Canonical coordinates appear in differing orders across exposition/listings; the quartic listing stores momenta first. | Uniform public order (q...,p...), with source initial conditions explicitly converted. Analytic gradients/Jacobians replace legacy symbolic dependencies. |
+
+The Hénon–Heiles saddle energy 1/6 permits escape channels; it is not used as a
+universal classification of individual trajectories. Quartic portraits at larger r
+are observations, not proofs of monotonically increasing chaos. Section refinement
+cannot repair global phase/energy errors or recover crossings missed by coarse
+sampling. Adaptive integration and symplectic stepping have different numerical
+error behavior; neither numerical conservation nor a portrait proves a theorem.
