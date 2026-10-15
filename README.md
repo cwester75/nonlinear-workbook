@@ -1,5 +1,14 @@
 # Nonlinear Workbook
 
+## Chapter 9
+
+Implemented elementary binary automata, spin/Rule90 diagnostics, totalistic and
+outer-totalistic grids, Conway's Life, bounded exact cycles, and sliding-puzzle
+mechanics with an optional local interface. See [guide](docs/chapter09.md) and
+[validation](docs/chapter09-validation.md). Run
+`python examples/chapter09/validation.py` for headless examples, or explicitly
+launch `python examples/chapter09/puzzle.py` to play. Chapter 13 remains future work.
+
 ## Chapter 7
 
 Implemented bounded logistic/Hénon control, Lorenz parameter modulation,
@@ -8,7 +17,7 @@ Shared diagnostics include conditional QR spectra and arbitrary-dimensional
 stroboscopic sampling. See [guide](docs/chapter07.md) and
 [validation](docs/chapter07-validation.md). Run
 `python examples/chapter07/validation.py` for control histories, noise sensitivity,
-conditional spectra and synchronization limitations. Chapters 9 and 13 remain.
+conditional spectra and synchronization limitations.
 
 ## Chapter 4
 

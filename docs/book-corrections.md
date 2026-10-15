@@ -300,3 +300,23 @@ logistic maps the transverse factors are f'(s_n)−2c and their logarithms are
 averaged. Negative finite-time conditional estimates are local evidence; they do
 not establish a global basin or noise robustness. Complete-state agreement is
 not merely a phase-locking measurement, despite the chapter's phase terminology.
+
+## Chapter 9 corrections and implementation departures
+
+Printed pp.299–312 / PDF pp.311–324 were visually reviewed. Suspected issues
+were rechecked at full resolution, including pp.302–303,305,307,311.
+
+| Printed page | Type | Finding | Decision / evidence |
+|---|---|---|---|
+| 301 | Notation inconsistency | The elementary-rule discussion says r=2,k=1, reversing the binary-state count k=2 and neighborhood radius r=1 defined on p.299. | Use three binary cells, eight neighborhoods, and codes0..255. Exhaust every rule and neighborhood. |
+| 302–303 | Confirmed recurrence error | For the printed five-site initial spins (−1,−1,+1,−1,−1), the claim S(6)=S(1) is false under both the printed equation and listing. | Exact binary history is 00100,01010,10001,11011,01010,10001,11011,01010. The preperiod is1 and period3; S(4)=S(1)=S(7). Independent scalar and vectorized updates agree. |
+| 302 | Algebraic convention | The text calls the modulo-two sum nonlinear. Its algebraic characterization depends on the field/representation. | State explicitly that Rule90 is linear over GF(2), with equivalent multiplicative spin rule S'=−S_left*S_right. No chaos classification follows from either representation. |
+| 305 | Confirmed neighborhood transcription error | The displayed totalistic sum repeats a_(i,j−1) and omits a_(i+1,j), unlike the complete five-site neighborhood on p.304. | Count center plus all four von Neumann offsets; validate against independent scalar sums, and support the eight-offset Moore case separately. |
+| 307–308 | Output-generation mismatch | The Life update writes A from the copied old buffer B, but the output prints B under the current update's label. | Export generation zero explicitly and label each newly computed state by its actual update count. No Life overpopulation correction is made: full-resolution p.307 correctly uses temp>=4. |
+| 311 | Biased randomization / deliberate departure | int(k*Math.random()−.1) is biased by truncation toward zero; arbitrary tile permutations can also be unreachable from the goal. | Use explicit NumPy seeds and legal-move shuffling from the goal. Retain all forward/inverse moves, verify exact replay, and do not claim uniform sampling of reachable boards. |
+| 309–312 | Interface departure | The source uses Java AWT buttons and runtime-generated labels. | Separate a NumPy-only immutable puzzle engine from an optional Matplotlib interface with tested callbacks. Out-of-grid coordinates are invalid; in-grid illegal moves are unchanged results. |
+
+Periodic offsets retain multiplicity on small grids, rather than silently
+deduplicating aliased cells. Fixed-zero boundaries mean exterior ghost cells,
+not permanently zero edge cells. Finite cycles and visible structure are not
+proofs of infinite-lattice classes, fractal dimension or thermodynamic claims.
