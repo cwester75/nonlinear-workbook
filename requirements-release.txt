@@ -1,0 +1,3 @@
+# CPython 3.12.14; includes numerical, example and build-tool pins.
+-r requirements-examples.txt
+pip==25.0.1

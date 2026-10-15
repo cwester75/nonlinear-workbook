@@ -1,5 +1,13 @@
 # Nonlinear Workbook
 
+## Validation-first release
+
+The v0.1.0 release adds pinned CI, bounded smoke checks, synthetic negative controls,
+and a causal shadow-only diagnostic adapter for optional outlierhunter research.
+See [release validation](docs/release-validation.md), [coverage](docs/coverage.md),
+and the [integration contract](integrations/outlierhunter/README.md). Chapter13
+remains deferred; no held-out market dataset or trading decision is used.
+
 ## Chapter 9
 
 Implemented elementary binary automata, spin/Rule90 diagnostics, totalistic and
