@@ -2,7 +2,7 @@
 import numpy as np
 from .chapter10 import integrate
 from .chapter04 import integrate_separable, refined_sections, SectionResult
-from .flow_validation import (flow_lyapunov_spectrum, exterior_area_growth,
+from .flow_validation import (flow_lyapunov_spectrum, conditional_flow_spectrum, exterior_area_growth,
                               second_compound, wedge, FlowSpectrumResult, AreaGrowthResult)
 
 

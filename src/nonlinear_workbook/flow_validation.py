@@ -85,24 +85,45 @@ def flow_lyapunov_spectrum(rhs,jacobian,y0,*,burn_in,duration,qr_interval,
     accumulating growth. Incomplete intervals are not bridged or measured.
     Evaluation count includes all augmented RHS calls, each evaluating f and J.
     """
-    y,parameters=_controls(y0,burn_in,duration,qr_interval,solver_parameters); n=len(y)
+    raw=np.asarray(y0,float)
+    if raw.ndim!=1: raise ValueError('vector state required')
+    return conditional_flow_spectrum(rhs,jacobian,y0,burn_in=burn_in,duration=duration,
+        qr_interval=qr_interval,initial_basis=initial_basis,solver_parameters=solver_parameters,
+        response_dimension=len(raw))
+
+
+def conditional_flow_spectrum(rhs,response_jacobian,y0,*,response_dimension,burn_in,
+                              duration,qr_interval,initial_basis,solver_parameters):
+    """Full state integration with a separately sized conditional tangent system.
+
+    response_jacobian(t,full_state) describes infinitesimal response perturbations
+    with the drive held fixed. It is not the full coupled-system Jacobian.
+    Column order, burn alignment, trace accounting and failures match flow QR.
+    """
+    y,parameters=_controls(y0,burn_in,duration,qr_interval,solver_parameters); state_size=len(y)
+    n=response_dimension
+    if not isinstance(n,(int,np.integer)) or isinstance(n,bool) or not 1<=n<=state_size:
+        raise ValueError('valid response dimension required')
     basis=np.asarray(initial_basis,float)
     if basis.shape!=(n,n) or not np.isfinite(basis).all() or np.linalg.matrix_rank(basis)!=n: raise ValueError('full-rank initial basis required')
     q,r=np.linalg.qr(basis); signs=np.where(np.diag(r)<0,-1.,1.); q=q*signs
-    checked=_functions(rhs,jacobian,n)
+    def checked(t,y):
+        f=np.asarray(rhs(t,y.copy()),float); j=np.asarray(response_jacobian(t,y.copy()),float)
+        if f.shape!=(state_size,) or j.shape!=(n,n): raise ValueError('RHS/response Jacobian shape mismatch')
+        return f,j
     def augmented(t,z):
-        f,j=checked(t,z[:n]); tangent=z[n:-1].reshape(n,n)
+        f,j=checked(t,z[:state_size]); tangent=z[state_size:-1].reshape(n,n)
         return np.concatenate((f,(j@tangent).ravel(),[np.trace(j)]))
     logs=np.zeros(n); elapsed=0.; trace=0.; times=[]; running=[]; calls=accepted=rejected=0; status='completed'
     for phase,lo,hi in _segments(burn_in,duration,qr_interval):
         result=integrate(augmented,np.concatenate((y,q.ravel(),[0.])),t_span=(lo,hi),**parameters)
         calls+=result.evaluations; accepted+=result.accepted_steps; rejected+=result.rejected_steps
         if result.status!='completed': status=result.status; break
-        z=result.states[-1]; tangent=z[n:-1].reshape(n,n)
+        z=result.states[-1]; tangent=z[state_size:-1].reshape(n,n)
         if np.linalg.matrix_rank(tangent)!=n: status='singular_tangent'; break
         newq,r=np.linalg.qr(tangent); diagonal=np.diag(r)
         if not np.isfinite(diagonal).all() or np.any(diagonal==0): status='singular_tangent'; break
-        q=newq*np.where(diagonal<0,-1.,1.); y=z[:n]
+        q=newq*np.where(diagonal<0,-1.,1.); y=z[:state_size]
         if phase=='measure':
             logs+=np.log(np.abs(diagonal)); trace+=z[-1]; elapsed+=hi-lo
             times.append(hi); running.append(logs/elapsed)

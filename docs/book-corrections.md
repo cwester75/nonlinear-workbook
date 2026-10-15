@@ -276,3 +276,27 @@ are observations, not proofs of monotonically increasing chaos. Section refineme
 cannot repair global phase/energy errors or recover crossings missed by coarse
 sampling. Adaptive integration and symplectic stepping have different numerical
 error behavior; neither numerical conservation nor a portrait proves a theorem.
+
+## Chapter 7 corrections and implementation departures
+
+Printed pp.243–274 / PDF pp.255–286 were visually reviewed before implementation;
+suspected issues were rechecked at full resolution.
+
+| Printed page | Type | Finding | Decision / evidence |
+|---|---|---|---|
+| 246–248, 251, 261–262 | Listing/control convention mismatch | Listings assign perturbed parameters inside a neighborhood or perturbation test, but omit the nominal reset when the test fails. This retains a previous perturbation outside its activation region. | Compute each decision from the current measurement before the next update; reset to nominal whenever inactive. Tests verify resets and rejected perturbations. |
+| 250–253 | Coordinate convention | The controlled Hénon map is (a−x²+by,x), whereas Chapter1 implements (1+y−a*x²,b*x). | Separately name the additive-parameter map, Jacobian and fixed points; preserve Chapter1's API. Parameter perturbations are not interchangeable. |
+| 251 | Confirmed linear-stability issue | With a=1.4,b=.3 and the positive fixed point, printed gains K=(−.1,1.3) give det(A−BK)=1 and complex poles of modulus one. They do not give asymptotic linear stability. | Retain the printed gains as a diagnostic counterexample. Validated pole placement uses poles .2,.3. This does not claim that marginal linearization determines the full nonlinear behavior. |
+| 257 | Time convention | The periodically forced listing resets time after burn-in, restarting the forcing phase. | Preserve absolute time and sample exact drive-period endpoints. Retain the printed frequency 6.28318, rather than silently replacing it by 2π. |
+| 258 | Explicit synthetic extension | Section7.4 supplies general entrainment conditions but no worked numerical trajectory fixture. | Demonstrate additive feedforward F=target′−f(t,target) on the existing anharmonic oscillator, with independent target consistency and forced-linear reference checks. Attraction is not guaranteed by target consistency. |
+| 264–265 | Confirmed equation/listing mismatch | The master equation on p.264 prints x′=y−z, while its response uses −y−z and the listing on p.265 uses −y−z for both. With the printed master sign the stated synchronization manifold is not invariant. | Use x′=−y−z and test exact equality of corresponding master/response derivatives on the synchronization manifold. |
+| 269 | Proof gap, spectral result retained | The proof assumes that any real matrix can be made upper triangular with a real orthogonal similarity. This does not cover matrices with nonreal eigenvalues. | The symmetric/antisymmetric transformation directly gives diag(A,A−2cI), proving the stated spectrum without that assumption; test with complex eigenvalues. |
+| 271 | Exponent definition issue | Eigenvalues of an unnormalized limiting fundamental matrix, followed by ln(abs(mu)), do not define continuous-time Lyapunov rates; the displayed construction omits the time normalization. | Accumulate normalized tangent growth using QR and divide by elapsed physical time. Conditional and transverse spectra remain distinct from the full-system spectrum. |
+
+The continuous-flow shift lambda_transverse=lambda−2c requires identical systems
+with full isotropic diffusive coupling along a synchronized trajectory. It is not
+the rule for maps, anisotropic coupling, or arbitrary off-manifold motion. For
+logistic maps the transverse factors are f'(s_n)−2c and their logarithms are
+averaged. Negative finite-time conditional estimates are local evidence; they do
+not establish a global basin or noise robustness. Complete-state agreement is
+not merely a phase-locking measurement, despite the chapter's phase terminology.

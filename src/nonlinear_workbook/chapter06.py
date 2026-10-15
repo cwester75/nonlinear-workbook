@@ -144,7 +144,9 @@ def stroboscopic_sample(rhs,y0,*,initial_time,period,burn_in_periods,samples,
     Phases=(omega*absolute_time+offset) modulo2pi. For two drives these
     metadata do not make the projected two-state samples a closed return map.
     """
-    y=_state(y0); _integer(burn_in_periods,0); _integer(samples,1)
+    raw=np.asarray(y0,float)
+    if raw.ndim!=1 or not len(raw): raise ValueError('nonempty vector required')
+    y=_state(y0,n=len(raw)); dimension=len(y); _integer(burn_in_periods,0); _integer(samples,1)
     omega=np.asarray(drive_frequencies,float); offsets=np.asarray(drive_phases,float)
     if omega.ndim!=1 or not len(omega) or offsets.shape!=omega.shape or not np.isfinite(omega).all() or not np.isfinite(offsets).all() or (omega<=0).any() or not np.isfinite([initial_time,period]).all() or period<=0: raise ValueError('invalid sampling controls')
     if 't_span' in solver_parameters: raise ValueError('sampler owns t_span')
@@ -158,7 +160,7 @@ def stroboscopic_sample(rhs,y0,*,initial_time,period,burn_in_periods,samples,
             y=result.states[-1]; t=endpoint
         if i>=burn_in_periods: times.append(t); states.append(y.copy())
     times=np.asarray(times)
-    return StroboscopicResult(times,np.array(states).reshape(-1,2),(times[:,None]*omega+offsets)%(2*np.pi),calls,accepted,rejected,status)
+    return StroboscopicResult(times,np.array(states).reshape(-1,dimension),(times[:,None]*omega+offsets)%(2*np.pi),calls,accepted,rejected,status)
 
 
 @dataclass

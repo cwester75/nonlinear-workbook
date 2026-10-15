@@ -1,5 +1,15 @@
 # Nonlinear Workbook
 
+## Chapter 7
+
+Implemented bounded logistic/Hénon control, Lorenz parameter modulation,
+feedforward entrainment, Rössler drive–response and diffusive synchronization.
+Shared diagnostics include conditional QR spectra and arbitrary-dimensional
+stroboscopic sampling. See [guide](docs/chapter07.md) and
+[validation](docs/chapter07-validation.md). Run
+`python examples/chapter07/validation.py` for control histories, noise sensitivity,
+conditional spectra and synchronization limitations. Chapters 9 and 13 remain.
+
 ## Chapter 4
 
 Implemented Hénon–Heiles and quartic Hamiltonians, periodic/open three-body Toda,
@@ -7,7 +17,7 @@ open-chain Lax diagnostics, Mathieu Floquet analysis, and shared separable
 integration/refined sections. See [guide](docs/chapter04.md) and
 [validation](docs/chapter04-validation.md). Run
 `python examples/chapter04/validation.py` for trajectories, sections, conserved
-quantities and the Mathieu stability scan. Chapters 7, 9 and 13 remain future work.
+quantities and the Mathieu stability scan.
 
 ## Chapter 8
 
