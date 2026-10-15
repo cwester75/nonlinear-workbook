@@ -15,9 +15,14 @@ def _state(y):
 
 
 def _rhs(f,t,y):
+    # Detect invalid trial stages before a model's state validator sees them.
+    # Do not catch its ValueError: that may identify invalid model parameters.
+    if not np.isfinite(t) or not np.isfinite(y).all():
+        raise FloatingPointError('nonfinite trial time/state')
     a=np.asarray(f(t,y.copy()),float)
     if a.ndim==0 and y.shape==(1,): a=a.reshape(1)
     if a.shape!=y.shape: raise ValueError('derivative shape mismatch')
+    if not np.isfinite(a).all(): raise FloatingPointError('nonfinite derivative')
     return a
 
 
@@ -93,13 +98,20 @@ def integrate(rhs,y0,*,t_span,method,step,max_steps=100000,escape_radius=np.inf,
     if atol.ndim>1 or (atol.ndim==1 and atol.shape!=y.shape) or not np.isfinite(atol).all() or (atol<=0).any() or not np.isfinite(rtol) or rtol<0: raise ValueError('invalid tolerances')
     times=[t]; states=[y.copy()]; steps=[]; errors=[]; rejected=0; calls=0; status='max_steps'
     h=min(step,max_step)
+    def counted_rhs(t,y):
+        nonlocal calls
+        calls+=1
+        return rhs(t,y)
     if np.max(np.abs(y))>escape_radius: status='escaped'; max_steps=0
     for _ in range(max_steps):
         h=min(h,end-t,max_step)
         if t+h==t: status='step_underflow'; break
-        with np.errstate(over='ignore',invalid='ignore',divide='ignore'):
-            if method=='euler': new=euler_step(rhs,t,y,h); error=np.zeros_like(y); calls+=1
-            else: new,error=rkf45_step(rhs,t,y,h); calls+=6
+        try:
+            with np.errstate(over='ignore',invalid='ignore',divide='ignore'):
+                if method=='euler': new=euler_step(counted_rhs,t,y,h); error=np.zeros_like(y)
+                else: new,error=rkf45_step(counted_rhs,t,y,h)
+        except (FloatingPointError,OverflowError):
+            status='nonfinite'; break
         if not np.isfinite(new).all() or not np.isfinite(error).all(): status='nonfinite'; break
         norm=float(np.max(np.abs(error)/(atol+rtol*np.maximum(np.abs(y),np.abs(new)))))
         if method=='rkf45_adaptive' and norm>1:
@@ -135,6 +147,8 @@ def central_difference(rhs,u0,u1,*,step,n,escape_radius=np.inf):
     a,b=_state(u0),_state(u1)
     if a.shape!=b.shape or not np.isfinite(step) or step<=0 or not isinstance(n,(int,np.integer)) or n<2 or escape_radius<=0 or np.isnan(escape_radius): raise ValueError('invalid recurrence controls')
     values=[a,b]; status='completed'
+    if max(np.max(np.abs(a)),np.max(np.abs(b)))>escape_radius:
+        return np.arange(2)*step,np.array(values),'escaped'
     for _ in range(n-2):
         with np.errstate(over='ignore',invalid='ignore'): new=a+2*step*np.asarray(rhs(b.copy()),float)
         if new.shape!=b.shape: raise ValueError('derivative shape mismatch')

@@ -20,7 +20,8 @@ to length-one vectors. Integration includes the initial state, clips the final s
 to the requested end time, and supports forward time only. It returns accepted
 times/states, accepted step sizes and normalized embedded errors, rejected count,
 actual RHS evaluation count, and a termination status. Each Euler trial costs one
-call; each Fehlberg trial costs six. max_steps bounds all trials, including rejects.
+call; each completed Fehlberg trial costs six. Failed trials count only the RHS
+calls actually attempted. max_steps bounds all trials, including rejects.
 
 Methods: euler, rkf45 (fixed fifth-order Fehlberg), rkf45_adaptive. Adaptive control
 uses max_i |error_i|/(atol_i+rtol*max(|old_i|,|new_i|)), safety .9, factor limits .1
@@ -29,6 +30,18 @@ Reported local errors do not certify global accuracy. This explicit solver is no
 intended as a stiff solver. Fixed Euler error norms are zero placeholders, not
 estimated error bounds. Exceptions signal invalid input; statuses signal incomplete
 integration. Nonfinite trials are stopped rather than silently retried.
+FloatingPointError and OverflowError during a trial return status `nonfinite`,
+retaining only previously accepted states. Trial times/states and derivative
+arrays are checked before a nonfinite stage can reach a model's state validator.
+ValueError from model parameter validation or malformed derivative shapes remains
+an exception; it is not broadly swallowed as a numerical failure.
+
+The central-difference recurrence checks both supplied states against the escape
+radius before evaluating its RHS, even when n=2 requests no further updates.
+An initially escaped pair is returned unchanged with status `escaped`.
+
+These numerical-boundary regressions are covered by
+tests/test_numerical_regressions.py; the complete suite now has138 passing tests.
 
 Symplectic methods require separable H=T(p)+V(q), supplied gradients and fixed
 steps. They preserve symplectic structure, not exact energy. Do not apply them
