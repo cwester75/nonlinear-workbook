@@ -20,7 +20,7 @@ prove the chapter's theorems or every source assertion is correct.
 | 10 | Implemented | Euler, Fehlberg, supplied Taylor and separable symplectic methods | chapter10.md; order checks and numerical failure regressions |
 | 11 | Implemented | Hopfield, Kohonen, perceptrons and sigmoid networks | chapter11.md; exact fixtures and gradient checks |
 | 12 | Implemented | Genetic search, TSP, knapsack, annealing and islands | chapter12.md; exact small references and evaluation accounting |
-| 13 | Deferred | Fuzzy sets, operators, defuzzification, arithmetic and rules | Source equations/examples still require a complete visual review |
+| 13 | Implemented | Membership operators, defuzzification, exact finite extension, alpha-cut/LR arithmetic and rule inference | chapter13.md; exact fixtures, approximation/grid/operator sensitivity |
 
 Shared release additions provide a causal, shadow-only diagnostic window adapter,
 periodic/stochastic synthetic controls, explicit unavailable results, and baseline

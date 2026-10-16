@@ -320,3 +320,37 @@ Periodic offsets retain multiplicity on small grids, rather than silently
 deduplicating aliased cells. Fixed-zero boundaries mean exterior ghost cells,
 not permanently zero edge cells. Finite cycles and visible structure are not
 proofs of infinite-lattice classes, fractal dimension or thermodynamic claims.
+
+## Chapter 13: Fuzzy Sets and Fuzzy Logic (reviewed 2026-10-16)
+
+All printed pp.495-576 were visually reviewed; the following items were checked
+at higher resolution. Corrections are distinguished from explicit implementation
+choices. Reference fixtures reside in tests/test_chapter13.py and the chapter example.
+
+| Printed pages | Source issue | Correction / implementation and evidence |
+|---|---|---|
+| 510 | The near formula uses density normalization; its peak need not be <=1. Sigma is called variance although squared in the exponent. Its Dirac interpretation conflates density and grade limits. | Peak-one exp(-(x-p)^2/(2 sigma^2)), sigma a positive standard deviation. Gaussian landmark test and membership plots. This is an explicitly selected normalized membership convention. |
+| 511 | The printed logistic sharp-step limit uses lambda -> infinity. | The sharp transition is lambda -> 0+; at finite x, lambda -> infinity gives .5. Stable logistic tail/landmark tests. |
+| 512 | Hotness table prints .825 at 35/40. | 35/40=.875; its square .765625 explains the rounded .766 on p.513. Formula, not erroneous entry, defines the hedge fixture. |
+| 521, 537 | relativeCardinality divides by coordinate-domain width, contradicting the finite-cardinality definition on p.501. | Divide by the number of universe elements. The p.537 grades sum to 2.8 over five points: .56, not .7. Discrete listing test. |
+| 522 | Interpolation requests the next index even at the last universe coordinate. | Explicit bounded interpolation, with declared outside policy; endpoint checks avoid reading beyond arrays. |
+| 529-530 | beta selection can leave tie handling dependent on sorting/indexing details. | Stable smaller-coordinate-first selection. This is a policy choice, not an asserted transcription error. |
+| 555 | Absolute-value spread multiplication is presented for negative operands without exchanging flanks. | Approximate products use derivative-sign-dependent flanks. Signed scaling/negative interval reference checks; all multiplication compression remains approximate. |
+| 556 versus 562 | Printed reciprocal right spread has denominator mu(mu+alpha); listing uses mu(mu-alpha). | Match reciprocal support endpoints. For (3,.5,.5), reciprocal spreads are 1/21 and 1/15. Consequently the approximate (2,.5,.5)/(3,.5,.5) has right spread .3, rather than the symmetric .2619 printed on pp.556/564. Arithmetic tests and exact-cut comparison plot. |
+| 561 | Multiplication of spreads by a negative scalar gives negative spreads. Crisp zero-spread evaluation can divide by zero. | Use magnitude and exchange flanks; explicitly handle singleton/shoulder membership. Signed and zero-spread tests. |
+| 544 | Discussion says the price grid has 3000 elements, but the inclusive 2000..5000 listing has 3001. | Record 3001 and reproduce minimum-aggregation prices 3649/3146. Grid sensitivity is separate from book acceptance. |
+
+Additional interpretation choices: discrete sum centroid and sampled continuous
+centroid are separate APIs; normalized weighted means require nonnegative nonzero
+weights; alpha=0 on a finite universe differs from support closure in continuous
+cut arithmetic; exact-key extension never silently bins float results. The hedge
+exponents in the prose table and code constants differ, so examples record the
+actual numerical exponents rather than assigning universal linguistic meanings.
+
+The p.576 language scores are grades, not calibrated probabilities. The first two
+Java results on the listing's 200-point grid reproduce to printed rounding. The
+third printed extend token is malformed (`0.0.5`), so it cannot define an
+unambiguous fixture. Both interpretations are reported: zero yields Java grade
+zero (consistent up to roundoff with the near-zero listing); .5 yields about
+.472848. Neither input is silently selected to force agreement. No theorem
+or controller-stability conclusion is inferred from these examples.

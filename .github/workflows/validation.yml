@@ -29,3 +29,4 @@ jobs:
       - run: python examples/release_smoke.py
       - run: python examples/chapter09/validation.py
       - run: python examples/chapter10/validation.py
+      - run: python examples/chapter13/validation.py --smoke

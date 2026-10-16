@@ -5,8 +5,9 @@
 The v0.1.0 release adds pinned CI, bounded smoke checks, synthetic negative controls,
 and a causal shadow-only diagnostic adapter for optional outlierhunter research.
 See [release validation](docs/release-validation.md), [coverage](docs/coverage.md),
-and the [integration contract](integrations/outlierhunter/README.md). Chapter13
-remains deferred; no held-out market dataset or trading decision is used.
+and the [integration contract](integrations/outlierhunter/README.md). Subsequent
+Chapter 13 work adds fuzzy-set, arithmetic and rule-inference examples; no held-out
+market dataset or trading decision is used.
 
 ## Chapter 9
 
@@ -15,7 +16,7 @@ outer-totalistic grids, Conway's Life, bounded exact cycles, and sliding-puzzle
 mechanics with an optional local interface. See [guide](docs/chapter09.md) and
 [validation](docs/chapter09-validation.md). Run
 `python examples/chapter09/validation.py` for headless examples, or explicitly
-launch `python examples/chapter09/puzzle.py` to play. Chapter 13 remains future work.
+launch `python examples/chapter09/puzzle.py` to play.
 
 ## Chapter 7
 
@@ -155,3 +156,13 @@ perceptrons, and online/batch sigmoid backpropagation. Import from
 [validation](docs/chapter11-validation.md). The three example scripts generate
 JSON/CSV diagnostics and seven PNGs under ignored outputs/chapter11/. Existing
 Chapter 1/2 APIs and pinned dependencies are preserved.
+
+## Chapter 13
+
+Implemented fuzzy sets, explicit operators and defuzzification, bounded extension
+arithmetic, alpha-cut intervals, separately named LR approximations and diagnostic
+rule inference. See [coverage and APIs](docs/chapter13.md),
+[validation](docs/chapter13-validation.md), and [corrections](docs/book-corrections.md).
+Run `python examples/chapter13/validation.py` for deterministic book/synthetic
+fixtures and four headless plots. Existing release tags and outlierhunter pins
+remain unchanged; no detector or controller-stability claims are introduced.
