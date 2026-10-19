@@ -1,13 +1,14 @@
 # Nonlinear Workbook
 
-## Validation-first release
+## Validated all-chapter release
 
-The v0.1.0 release adds pinned CI, bounded smoke checks, synthetic negative controls,
-and a causal shadow-only diagnostic adapter for optional outlierhunter research.
-See [release validation](docs/release-validation.md), [coverage](docs/coverage.md),
-and the [integration contract](integrations/outlierhunter/README.md). Subsequent
-Chapter 13 work adds fuzzy-set, arithmetic and rule-inference examples; no held-out
-market dataset or trading decision is used.
+The v0.2.0 release covers all 13 chapters, including the Chapter 13 integer and
+extreme-input fixes. Numerical validation remains synthetic-only, with pinned
+runtime dependencies, CI smoke checks and an optional causal shadow adapter.
+See [v0.2.0 validation](docs/release-v0.2.0.md), [coverage](docs/coverage.md),
+and the [integration contract](integrations/outlierhunter/README.md).
+The [v0.1.0 report](docs/release-validation.md) is retained as historical evidence.
+No held-out market dataset, detector threshold or trading decision is used.
 
 ## Chapter 9
 

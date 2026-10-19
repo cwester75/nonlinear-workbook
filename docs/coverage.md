@@ -1,5 +1,8 @@
 # Release coverage matrix
 
+Current release: v0.2.0, covering all 13 chapters. See
+[release validation](release-v0.2.0.md) for the synthetic-only evidence and pinning contract.
+
 This matrix distinguishes implemented numerical examples from explanatory theory.
 Each chapter guide has the section-level inventory, printed-page references,
 corrections and exact validation commands. A completed chapter means its declared
