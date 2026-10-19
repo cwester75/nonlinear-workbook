@@ -47,16 +47,30 @@ def ramp(x,left,right,*,increasing=True):
     return y if increasing else 1-y
 
 
+def _normalized_difference(x,center,width):
+    width=_positive(width)
+    x,center=np.broadcast_arrays(finite(x),finite(center))
+    # Subtract first to preserve cancellation accuracy on the ordinary path.
+    # Only opposite-sign extremes can overflow finite subtraction. Scaling their
+    # operands first avoids that overflow; their signs prevent inf-inf here.
+    with np.errstate(over='ignore',under='ignore'):
+        difference=x-center
+        result=np.array(difference/width,copy=True)
+        overflow=~np.isfinite(difference)
+        if np.any(overflow):
+            result[overflow]=x[overflow]/width-center[overflow]/width
+    return result
+
+
 def gaussian(x,center,sigma):
-    _positive(sigma); finite(center)
-    with np.errstate(over='ignore'): return np.exp(-.5*((finite(x)-center)/sigma)**2)
+    z=_normalized_difference(x,center,sigma)
+    with np.errstate(over='ignore',under='ignore'): return np.exp(-.5*z**2)
 
 
 def logistic(x,center,width):
-    _positive(width); finite(center)
-    with np.errstate(over='ignore'): z=(finite(x)-center)/width
-    # logaddexp avoids overflow in either tail.
-    return np.exp(-np.logaddexp(0,-z))
+    z=_normalized_difference(x,center,width)
+    # logaddexp avoids overflow in either tail; underflow is valid saturation.
+    with np.errstate(under='ignore'): return np.exp(-np.logaddexp(0,-z))
 
 
 def spread(z,*,kind='linear',power=2.):

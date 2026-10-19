@@ -15,6 +15,27 @@ class SetsTests(unittest.TestCase):
         np.testing.assert_allclose(c.ramp([-1,0,.5,1,2],0,1),[0,0,.5,1,1],atol=1e-12)
         self.assertEqual(float(c.gaussian(3,3,.2)),1)
         np.testing.assert_allclose(c.logistic([-1e308,0,1e308],0,1e-308),[0,.5,1],atol=1e-12)
+    def test_finite_extreme_memberships(self):
+        # The standardized distance is exactly +/-2 although subtraction overflows.
+        import warnings
+        with warnings.catch_warnings(), np.errstate(all='raise'):
+            warnings.simplefilter('error',RuntimeWarning)
+            for sign in (-1.,1.):
+                x=sign*1e308;center=-sign*1e308
+                self.assertAlmostEqual(float(c.gaussian(x,center,1e308)),np.exp(-2),places=12)
+                self.assertAlmostEqual(float(c.logistic(x,center,1e308)),1/(1+np.exp(-2*sign)),places=12)
+            # Equal huge values must not form inf-inf when divided by a tiny width.
+            self.assertEqual(float(c.gaussian(1e308,1e308,1e-308)),1.)
+            self.assertEqual(float(c.logistic(1e308,1e308,1e-308)),.5)
+            # Preserve cancellation accuracy for adjacent finite same-sign values.
+            center=1e308;width=np.spacing(center);x=np.nextafter(center,np.inf)
+            self.assertAlmostEqual(float(c.gaussian(x,center,width)),np.exp(-.5),places=12)
+            self.assertAlmostEqual(float(c.logistic(x,center,width)),1/(1+np.exp(-1)),places=12)
+            values=np.array([-1e308,0,1e308]);centers=-values
+            np.testing.assert_allclose(c.gaussian(values,centers,1e308),[np.exp(-2),1,np.exp(-2)],rtol=0,atol=1e-12)
+            np.testing.assert_allclose(c.logistic(values,centers,1e308),[1/(1+np.exp(2)),.5,1/(1+np.exp(-2))],rtol=0,atol=1e-12)
+            np.testing.assert_array_equal(c.gaussian(values,0,1e-308),[0,1,0])
+            np.testing.assert_array_equal(c.logistic(values,0,1e-308),[0,.5,1])
     def test_spreads(self):
         for kind in ('linear','exponential','gaussian','polynomial'):
             y=c.spread([0,.5,1,2],kind=kind)
@@ -105,6 +126,22 @@ class ArithmeticTests(unittest.TestCase):
         self.assertEqual(add,{4:.2,5:.9,6:1.,7:.5,8:.4,9:.3})
         mult=c.extension([[1,2,3],[2,3,4]],[[.3,1,.4],[.7,1,.2]],lambda x,y:x*y)
         self.assertEqual(mult,{2:.3,3:.3,4:.7,6:1.,8:.2,9:.4,12:.2})
+    def test_extension_numpy_integer_overflow(self):
+        fixtures=[(np.int8,100),(np.int16,30000),(np.int32,100000),
+                  (np.int64,2**32),(np.uint64,2**64-1)]
+        for dtype,value in fixtures:
+            received=[]
+            def square(x):
+                received.append(type(x));return x*x
+            with self.subTest(dtype=dtype),np.errstate(over='raise',invalid='raise'):
+                result=c.extension([np.array([value],dtype=dtype)],[[1]],square)
+                self.assertEqual(result,{value*value:1.})
+                self.assertEqual(received,[int])
+                self.assertTrue(all(type(k) is int for k in result))
+        # Signed endpoints and mixed Fraction arithmetic also retain exact keys.
+        values=np.array([-(2**63),2**63-1],dtype=np.int64)
+        actual=c.extension([values,[Fraction(1,3)]],[[.4,1],[1]],lambda x,y:-x+y)
+        self.assertEqual(actual,{Fraction(-(2**63-1))+Fraction(1,3):1.,Fraction(2**63)+Fraction(1,3):.4})
     def test_fraction_independent_oracle(self):
         x=[Fraction(1,3),Fraction(2,3)];y=[Fraction(1,2),Fraction(1,3)];m=[.4,1];n=[1,.2]
         actual=c.extension([x,y],[m,n],lambda a,b:a+b)

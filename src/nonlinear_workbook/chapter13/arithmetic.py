@@ -7,7 +7,10 @@ from .sets import finite,grades,triangle,spread
 
 
 def extension(universes,memberships,function,*,max_combinations=1_000_000):
-    """Exact output-key equality; no rounding/binning. Fraction keys stay exact."""
+    """Exact output keys; NumPy integer inputs become Python ints before callbacks.
+
+    No rounding/binning. Fraction inputs and keys stay exact.
+    """
     if isinstance(max_combinations,bool) or not isinstance(max_combinations,(int,np.integer)) or max_combinations<1: raise ValueError('positive combination bound required')
     if not callable(function): raise ValueError('extension function must be callable')
     try:
@@ -16,7 +19,8 @@ def extension(universes,memberships,function,*,max_combinations=1_000_000):
         grade_sizes=[len(m) for m in memberships]
     except TypeError as exc: raise ValueError('sized finite input collections required') from exc
     if any(n<1 for n in sizes) or sizes!=grade_sizes or prod(sizes)>max_combinations: raise ValueError('invalid finite sets or extension combination limit exceeded')
-    xs=[tuple(x) for x in universes];ms=[grades(m) for m in memberships]
+    xs=[tuple(int(v) if isinstance(v,np.integer) else v for v in x) for x in universes]
+    ms=[grades(m) for m in memberships]
     if any(m.shape!=(n,) for m,n in zip(ms,sizes)): raise ValueError('membership vectors required')
     for x in xs:
         finite(x)

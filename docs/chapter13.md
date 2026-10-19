@@ -49,7 +49,10 @@ and zero-width triangles represent crisp singletons. Degenerate shoulders are su
 operators and defaults to .5. Gamma-weighted AND/OR generally are not associative.
 A logical minimum aggregation reproduces the pricing listing; varying gamma is a
 separate sensitivity experiment. `hedge` requires a finite positive exponent;
-the limiting infinite-exponent linguistic label remains explanatory. No global
+the limiting infinite-exponent linguistic label remains explanatory. Gaussian
+and logistic normalized differences retain subtract-first cancellation accuracy,
+with a scale-first fallback for finite subtraction overflow. Genuine tail
+saturation is retained without invalid arithmetic. No global
 hedge-name defaults hide the disagreement between the book's tables and code.
 `entropy` computes the sum of binary membership entropies, base >1, with 0log0=0;
 these are not probabilities normalized across the universe.
@@ -58,7 +61,10 @@ these are not probabilities normalized across the universe.
 
 `extension(universes, memberships, function, max_combinations=...)` computes the
 sup-min result by bounded enumeration. Exact integer/Fraction keys are preserved;
-float equality is literal, with no automatic rounding/binning. Output can be
+float equality is literal, with no automatic rounding/binning. NumPy signed and
+unsigned integer universe values are converted to Python integers before callbacks
+to avoid fixed-width overflow; Fraction values retain their original exact type.
+Callbacks remain responsible for any explicit narrowing casts they introduce. Output can be
 nonconvex and need not be a fuzzy number. All supplied map outputs must be finite.
 
 `CutIntervals(levels, bounds)` stores finite nested intervals at explicitly

@@ -127,3 +127,41 @@ interface smoke also passed. SHA256 comparisons found all 335 comparable legacy
 artifacts unchanged, including all 94 Chapter 7 files. Common numerical paths
 therefore retain their saved deterministic results; the new chapter's nine
 artifacts independently reproduced byte for byte.
+
+
+## Implementation review fixes (2026-10-19)
+
+Two implementation defects were reproduced with failing regression tests before
+applying fixes; these are not new source-book corrections.
+
+- Finite extension enumeration retained NumPy integer scalars, so an int64
+  callback square at 2**32 wrapped to zero. Input signed/unsigned NumPy integers
+  now become arbitrary-precision Python integers before callback evaluation.
+  Tests cover int8/int16/int32/int64/uint64, the uint64 maximum, both signed
+  int64 endpoints, callback argument types, and exact mixed Fraction operations.
+  Float and Fraction inputs are not coerced into integers.
+- Gaussian/logistic subtraction could overflow before normalization. For
+  x=1e308, center=-1e308, width=1e308, corrected grades are exp(-2) =
+  .1353352832366127 and logistic(2) = .8807970779778823. A shared private helper
+  subtracts first when finite and scales operands first only on overflowing
+  elements. This preserves nearby-large-value cancellation accuracy and avoids
+  inf-inf for equal huge inputs with tiny widths. Scalar, vector/broadcast,
+  reversed-sign, equal-value, adjacent-value and saturated-tail cases are checked
+  under raising NumPy error handling and RuntimeWarning-as-error, with absolute
+  grade tolerance 1e-12 and exact saturated values.
+
+The complete suite now passes 172 tests from both source and the built wheel
+(170 existing plus two regression tests).
+The full Chapter 13 example and its smoke command pass. Two full runs produce
+nine byte-identical files, all also identical to the pre-fix ordinary-fixture
+baseline. Previous sensitivity findings and plots therefore remain unchanged.
+Existing chapter APIs, frozen dependency versions, v0.1.0 and outlierhunter pins
+are preserved. Hosted CI is not claimed to have run.
+
+```powershell
+$env:PYTHONPATH='src'
+.venv-examples/Scripts/python.exe -m unittest discover -s tests -v
+.venv-examples/Scripts/python.exe examples/chapter13/validation.py --output outputs/chapter13-fixes/full
+.venv-examples/Scripts/python.exe examples/chapter13/validation.py --output outputs/chapter13-fixes/repeat
+.venv-examples/Scripts/python.exe examples/chapter13/validation.py --smoke --output outputs/chapter13-fixes/smoke
+```
