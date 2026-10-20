@@ -98,3 +98,15 @@ exponents can be spurious. Finite-horizon boundedness is not asymptotic attracti
 long quartic failures remain reported. Rule grades are not calibrated probabilities,
 and fuzzy force-inference examples do not prove stabilizing control. No numerical
 portrait or individual statistic is treated as proof of chaos or trading usefulness.
+
+
+## Hosted CI follow-up (2026-10-20)
+
+The first release push passed Linux validation, but Windows failed during runtime
+setup: actions/setup-python had no Windows 3.12.14 build. No numerical tests ran
+in that job. The CI repair preserves Python 3.12.14, using the publisher's
+20260929 python-build-standalone Windows archive and SHA256 verification. Linux
+continues to use setup-python. The matrix explicitly validates both current head
+and immutable v0.2.0 on each OS; the release tag and numerical code are unchanged.
+The consumer receives its own isolated synthetic-only workflow, with a portable
+HTTPS VCS URL for the same full release commit. No archive-backed tests are added.
